@@ -1,3 +1,80 @@
 from django.test import TestCase
 
 # Create your tests here.
+"""
+花 20 分钟给模型补测试。
+测试的作用不是“证明我写对了”，
+而是以后改代码时，能立刻发现有没有把原来的功能弄坏。
+"""
+
+from django.contrib.auth import get_user_model
+#get_user_model()：拿到当前项目使用的用户模型，不直接写死 User，以后换用户模型也不用改测试
+from django.db.models.deletion import ProtectedError
+#ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
+from django.test import TestCase
+# TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
+from .models import Category,Post,Tag
+#要测的三个模型
+
+#把所有模型测试放在一个类里。测试运行器会自动找到这个类，以及里面所有以 test_ 开头的方法。
+class PostModelTests(TestCase):
+    def setUp(self):
+        self.user=get_user_model().objects.create_user(username="tester")
+        self.category=Category.objects.create(name="Python",slug="python")
+        self.tag=Tag.objects.create(name="Django",slug="django")
+
+    def create_post(self,**kwargs):
+        data={
+            "title":"测试文章",
+            "slug":"test-post",
+            "body":"测试正文",
+            "category":self.category,
+            "author":self.user,
+        }
+        data.update(kwargs)
+        return Post.objects.create(**data)
+    #**data 里的两个星号是 Python 的“字典解包”语法
+
+    def test_published_manager_hides_drafts(self):
+        self.create_post(status=Post.Status.DRAFT)
+        self.assertEqual(Post.published.count(),0)
+
+    def test_publishing_sets_published_at(self):
+        post=self.create_post(status=Post.Status.PUBLISHED)
+        self.assertIsNotNone(post.published_at)   #发布时间
+        self.assertEqual(Post.published.count(),1)
+
+    def test_category_with_posts_cannot_be_deleted(self):
+        self.create_post()
+        with self.assertRaises(ProtectedError):
+            self.category.delete()
+
+
+"""
+这三个测试分别验证：
+1. 草稿不会出现在 Post.published 里；
+2. 文章第一次设为已发布时，published_at 会自动填上；
+3. 分类下面还有文章时，不能直接删除分类（PROTECT 生效）。
+TestCase 会创建一个临时测试数据库，跑完自动销毁，不会动你后台那篇文章。
+
+setUp() 会在每个 test_ 方法运行前执行一次。可以理解成“每次考试前先把文具摆好”：
+- 建一个测试用户；
+- 建一个 Python 分类；
+- 建一个 Django 标签。
+每个测试方法之间有事务隔离，一个测试建的数据不会污染下一个测试。
+
+先创建一篇关联到该分类的文章；
+然后尝试删除分类；
+因为 on_delete=PROTECT，Django 应该抛出 ProtectedError；
+assertRaises(ProtectedError) 的意思是“我期望这里抛这个异常”。如果没抛，测试反而失败。
+
+
+
+
+这段当成“测试的骨架”记住
+setUp()       准备数据
+test_xxx()    做一件事
+assert...     检查结果
+TestCase      自动建临时数据库、自动隔离
+
+"""
