@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'blog',
+    # 这一行的作用是告诉 Django：“这个项目里有一个叫 blog 的应用，启动时把它带上。
 ]
 
 MIDDLEWARE = [

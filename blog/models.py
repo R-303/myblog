@@ -1,0 +1,114 @@
+from django.db import models
+
+# Create your models here.
+
+from django.conf import settings
+from django.db import models
+from django.utils import timezone
+
+# 模型类就是数据库表的 Python 描述
+
+class Category(models.Model):
+    name=models.CharField("名称",max_length=50,unique=True)
+    slug=models.SlugField("URL 别名",max_length=60,unique=True)
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+
+#内部类
+    class Meta:
+        verbose_name="分类"
+        verbose_name_plural=verbose_name
+        ordering=["name"]
+
+    def __str__(self):
+        return self.name
+    # 静态方法
+
+
+class Tag(models.Model):
+    name=models.CharField("名称",max_length=30,unique=True)
+    slug=models.SlugField("URL 别名",max_length=40,unique=True)
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+
+    class Meta:
+        verbose_name="标签"
+        verbose_name_plural=verbose_name
+        ordering=["name"]
+
+    def __str__(self):
+        return self.name
+
+#括号里是父类
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
+#super调用父类方法
+
+class Post(models.Model):
+    class Status(models.TextChoices):
+        DRAFT="draft","草稿"
+        PUBLISHED="published","已发布"
+
+    title=models.CharField("标题",max_length=120)
+    slug=models.SlugField("URL 别名",max_length=140,unique=True)
+    summary=models.CharField("摘要",max_length=240,blank=True)
+    body=models.TextField("正文")
+    category=models.ForeignKey(
+        Category,
+        verbose_name="分类",
+        on_delete=models.PROTECT,
+        related_name="posts",
+    )
+    tags=models.ManyToManyField(
+        Tag,
+        verbose_name="标签",
+        blank=True,
+        related_name="posts",
+    )
+    author=models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="作者",
+        on_delete=models.CASCADE,
+        related_name="posts",
+    )
+    status=models.CharField(
+        "状态",
+        max_length=12,
+        choices=Status.choices,
+        default=Status.DRAFT,
+        db_index=True,
+    )
+
+    published_at=models.DateTimeField("发布时间",null=True,blank=True)
+    views=models.PositiveIntegerField("浏览量",default=0)
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+    updated_at=models.DateTimeField("更新时间",auto_now=True)
+
+    objects=models.Manager()
+    published=PublishedManager()
+
+    class Meta:
+        verbose_name="文章"
+        verbose_name_plural=verbose_name
+        ordering=["-published_at","-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self,*args,**kwargs):
+        if self.status==self.Status.PUBLISHED and self.published_at is None :
+            self.published_at=timezone.now()
+        super().save(*args,**kwargs)
+    #保存时间
+
+"""
+几个关键点，先看一遍：
+- CharField 是短文本，必须给 max_length；TextField 是长正文。
+- SlugField 是 URL 里用的短标识，比如 first-post。中文标题自动生成的 slug 可能为空，后台里要手动填英文。
+- ForeignKey 是“一对多”：一个分类有多篇文章。
+- ManyToManyField 是“多对多”：一篇文章可以有多个标签，一个标签也可以属于多篇文章。
+- on_delete=models.PROTECT：分类下面还有文章时，不允许删分类。
+- on_delete=models.CASCADE：删除作者时，他的文章也会被删除。
+- related_name="posts"：以后可以写 category.posts.all()、tag.posts.all()。
+- Post.objects 查全部文章，Post.published 只查已发布文章。
+- save() 里那段逻辑：第一次把文章设为已发布时，自动填发布时间。
+"""
