@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 虚拟环境与依赖缓存
+.venv/
+venv/
+.uv-cache/
+
+# Django 本地数据
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# 编辑器
+.idea/
+.vscode/
+
+# 测试与构建产物
+.coverage
+coverage.xml
+htmlcov/
+dist/
+build/
+*.log
