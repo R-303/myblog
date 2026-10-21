@@ -76,7 +76,7 @@ a:hover {
     margin-top:28px;
 }
 
-.tags span{
+.tags a{
     display: inline-block;
     border: 1px solid var(--border);
     border-radius: 999px;

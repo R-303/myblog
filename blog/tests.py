@@ -126,6 +126,30 @@ class PostViewTests(TestCase):
         response=self.client.get(reverse("blog:detail",args=[draft.pk]))
         self.assertEqual(response.status_code,404)   #判断是否相同
 
+
+    def test_category_page_shows_post(self):
+        response=self.client.get(
+          reverse("blog:category",args=[self.category.slug])
+        )
+        self.assertContains(response,self.post.title)
+        self.assertContains(response,f"分类：{self.category.name}")
+
+    def test_tag_page_shows_post(self):
+        response=self.client.get(
+            reverse("blog:tag",args=[self.tag.slug])
+        )
+        self.assertContains(response,self.post.title)
+        self.assertContains(response,"标签：Django")
+
+    def test_archive_page_shows_post(self):
+        year=self.post.published_at.year
+        month=self.post.published_at.month
+        response=self.client.get(
+            reverse("blog:archive",args=[year,month])
+        )
+        self.assertContains(response,self.post.title)
+        self.assertContains(response,f"{year} 年 {month} 月归档")
+        # 用self.post.published_at.year / month  不写死 2026 和 10，以后换日期测试也不会坏
 """
 这三个测试验证：
 - 首页只显示已发布文章；
