@@ -56,7 +56,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], #这样 Django 会去项目根目录的 templates/ 找模板
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

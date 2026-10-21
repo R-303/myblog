@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}文章列表 | 我的博客{% endblock %}
+
+{% block content %}
+  <h1>文章列表</h1>
+
+  {% for post in posts %}
+    <article>
+        <h2>
+            <a href="{% url 'blog:detail' post.pk %}">{{ post.title}}</a>
+        </h2>
+        <p>
+            {{post.published_at|date:"Y-m-d H:i"}}
+            · {{ post.category.name }}
+        </p>
+        <p>{{ post.summary|default:post.body|truncatechars:100}}</p>
+    </article>
+  {% empty %}
+    <p>还没有已发布文章</p>
+  {% endfor %}
+{% endblock %}

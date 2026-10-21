@@ -358,7 +358,7 @@ uv run manage.py runserver
 **你要做**
 
 - 写 `post_list`、`post_detail` 两个视图；
-- 写 `base.html`、`post_list.html`、`post_detail.html`；
+- 写 `base.html`、`post_detail.html`、`post_detail.html`；
 - 列表只显示已发布文章，草稿详情返回 404；
 - 详情页浏览量 +1；
 - 加基础 CSS，让页面能看。
