@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -117,7 +118,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS=[BASE_DIR / 'static']
+# STATIC_URL 是浏览器访问静态文件时用的 URL 前缀；STATICFILES_DIRS 告诉 Django 去哪里找这些文件。
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
