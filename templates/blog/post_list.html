@@ -13,6 +13,7 @@
         <p>
             {{post.published_at|date:"Y-m-d H:i"}}
             · {{ post.category.name }}
+            · {{ post.views}} 次阅读
         </p>
         <p>{{ post.summary|default:post.body|truncatechars:100}}</p>
     </article>

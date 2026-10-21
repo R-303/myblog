@@ -8,6 +8,7 @@
   <p>
       {{ post.published_at|date:"Y-m-d H:i" }}
       · {{ post.category.name }}
+      · {{ post.views}} 次阅读
   </p>
 
   {% if post.summary %}

@@ -1,4 +1,6 @@
+from django.contrib import auth
 from django.test import TestCase
+from  django.urls import reverse
 
 # Create your tests here.
 """
@@ -76,5 +78,58 @@ setUp()       准备数据
 test_xxx()    做一件事
 assert...     检查结果
 TestCase      自动建临时数据库、自动隔离
+
+"""
+
+class PostViewTests(TestCase):
+    def setUp(self):
+        self.user=get_user_model().objects.create_user(username="viewer")
+        self.category=Category.objects.create(name="Python",slug="python")
+        self.post=Post.objects.create(
+            title="博客的第一页",
+            slug="first-page",
+            summary="列表和详情已经接通",
+            body="这是详情页正文",
+            category=self.category,
+            author=self.user,
+            status=Post.Status.PUBLISHED,
+        )
+        self.tag=Tag.objects.create(name="Django",slug="django")
+        self.post.tags.add(self.tag)
+
+    def test_list_shows_only_published_posts(self):
+        Post.objects.create(
+            title="不能出现的草稿",
+            slug="hidden-draft",
+            category=self.category,
+            author=self.user,
+        )
+        response=self.client.get(reverse("blog:list"))
+        self.assertContains(response,"博客的第一页")
+        self.assertNotContains(response,"不能出现的草稿")
+
+    def test_detail_renders_and_counts_view(self):
+        response=self.client.get(reverse("blog:detail",args=[self.post.pk]))
+        self.post.refresh_from_db()
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"这是详情页正文")
+        self.assertEqual(self.post.views,1)
+
+    def test_draft_detail_returns_404(self):
+        draft=Post.objects.create(
+            title="草稿",
+            slug="draft-post",
+            body="草稿正文",
+            category=self.category,
+            author=self.user,
+        )#初始化，构造测试案例
+        response=self.client.get(reverse("blog:detail",args=[draft.pk]))
+        self.assertEqual(response.status_code,404)   #判断是否相同
+
+"""
+这三个测试验证：
+- 首页只显示已发布文章；
+- 详情页能渲染，并且浏览量加 1；
+- 草稿通过详情 URL 访问时返回 404。
 
 """
