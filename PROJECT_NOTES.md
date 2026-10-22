@@ -6,7 +6,8 @@
 
 ## 当前阶段
 
-阶段 0 / 项目骨架，已完成。
+阶段 4 已完成：分类、标签、归档、分页、站点设置和侧边栏。
+下一步补做 Markdown 与代码高亮，然后进入评论与投票。
 
 ## 技术栈
 
@@ -31,14 +32,21 @@ uv run manage.py test
 - Django `config` 项目骨架
 - 内置迁移已执行（`db.sqlite3` 已生成，未提交）
 - `manage.py check` 通过
+- `Category`、`Tag`、`Post`、`SiteSetting` 模型
+- Admin 后台和文章、分类、标签、站点设置管理
+- 文章列表、详情、分类、标签、归档页面
+- 浏览量和统一分页
+- 最新文章 / 分类 / 归档侧边栏
+- 11 个模型与视图测试
 
 ## 下一步
 
-1. 在 PyCharm 里打开本目录；
-2. 确认解释器指向 `.venv\Scripts\python.exe`；
-3. 运行 `uv run manage.py runserver`，打开 <http://127.0.0.1:8000/>；
-4. 做第一次 Git 提交；
-5. 进入阶段 1：创建 `blog` 应用，写 `Category`、`Tag`、`Post` 模型。
+1. 补做 Markdown 正文渲染和代码高亮；
+2. 写 `markdown_html` 模板过滤器；
+3. 支持标题、代码块和表格；
+4. 用 Pygments 生成高亮样式；
+5. 补测试并提交；
+6. 然后进入评论与投票功能。
 
 ## 约定
 
