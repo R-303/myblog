@@ -35,7 +35,7 @@ a:hover {
 
 .brand {
     display: block;
-    max-width: 760px;
+    max-width: 1040px;
     margin:0 auto;
     padding:18px 20px;
     font-size: 22px;
@@ -44,7 +44,7 @@ a:hover {
 }
 
 .container {
-    max-width: 760px;
+    max-width: 1040px;
     margin:0 auto;
     padding:36px 20px 80px;
 }
@@ -83,4 +83,63 @@ a:hover {
     padding:2px 10px;
     margin-right: 6px;
     font-size: 13px;
+}
+
+.page-grid {
+    display:grid;
+    grid-template-columns: minmax(0,1fr) 240px;
+    gap:32px;
+    align-items:start;
+}
+
+.content{
+    min-width: 0;
+}
+
+.sidebar {
+    border-left: 1px solid var(--border);
+    padding-left: 24px;
+}
+
+.sidebar section{
+    margin-bottom:28px;
+}
+
+.sider h2{
+    margin:0 0 10px;
+    font-size:16px;
+    letter-spacing:0.04em;
+}
+
+.sidebar ul{
+    list-style:none;
+    margin:0;
+    padding: 0;
+}
+
+.sidebar li{
+    margin:8px 0;
+    font-size:14px;
+}
+
+.pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-top:28px;
+    font-size:14px;
+}
+
+@media(max-width: 760px){
+    .page-grid  {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar{
+        border-left: 0;
+        border-top: 1px solid var(--border);
+        padding-left:0;
+        padding-top:24px;
+    }
 }

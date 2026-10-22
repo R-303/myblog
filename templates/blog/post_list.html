@@ -6,14 +6,14 @@
   <h1>{{ page_title }}</h1>
 
   {% for post in posts %}
-    <article>
+    <article class="post-card">
         <h2>
-            <a href="{% url 'blog:detail' post.pk %}">{{ post.title}}</a>
+            <a href="{% url 'blog:detail' post.pk %}">{{ post.title }}</a>
         </h2>
-        <p>
-            {{post.published_at|date:"Y-m-d H:i"}}
+        <p class="meta">
+            {{ post.published_at|date:"Y-m-d H:i" }}
             · <a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a>
-            · {{ post.views}} 次阅读
+            · {{ post.views }} 次阅读
         </p>
         <p>{{ post.summary|default:post.body|truncatechars:100}}</p>
 
@@ -28,4 +28,16 @@
   {% empty %}
     <p>还没有已发布文章</p>
   {% endfor %}
+
+  {% if page_obj.has_other_pages %}
+      <nav class="pagination">
+          {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+          {% endif %}
+          <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}页</span>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+          {% endif %}
+      </nav>
+  {% endif %}
 {% endblock %}

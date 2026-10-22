@@ -1,6 +1,7 @@
 from django.contrib import auth
 from django.test import TestCase
 from  django.urls import reverse
+from unicodedata import category
 
 # Create your tests here.
 """
@@ -15,7 +16,7 @@ from django.db.models.deletion import ProtectedError
 #ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
 from django.test import TestCase
 # TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
-from .models import Category,Post,Tag
+from .models import Category,Post,Tag,SiteSetting
 #要测的三个模型
 
 #把所有模型测试放在一个类里。测试运行器会自动找到这个类，以及里面所有以 test_ 开头的方法。
@@ -150,10 +151,38 @@ class PostViewTests(TestCase):
         self.assertContains(response,self.post.title)
         self.assertContains(response,f"{year} 年 {month} 月归档")
         # 用self.post.published_at.year / month  不写死 2026 和 10，以后换日期测试也不会坏
+
+    def test_list_paginates_posts(self):
+        SiteSetting.objects.update_or_create(
+            pk=1,
+            defaults={"page_size":1},
+        )
+        Post.objects.create(
+            title="第二篇文章",
+            slug="second-post",
+            body="第二篇正文",
+            category=self.category,
+            author=self.user,
+            status=Post.Status.PUBLISHED,
+        )
+        response=self.client.get(reverse("blog:list"))
+        self.assertEqual(len(response.context["page_obj"]),1)
+        self.assertTrue(response.context["page_obj"].has_next())
+
+    def test_sidebar_contains_latest_post_and_category(self):
+        response=self.client.get(reverse("blog:list"))
+        self.assertIn(self.post,response.context["latest_posts"])
+        self.assertIn(self.category,response.context["sidebar_categories"])
+
+
 """
 这三个测试验证：
 - 首页只显示已发布文章；
 - 详情页能渲染，并且浏览量加 1；
 - 草稿通过详情 URL 访问时返回 404。
+
+reverse("blog:list") 的作用是：把 URL 名字翻译成真实路径
+response 不是“接收创造的数据”，而是服务器返回的响应对象
+assertIn(self.post, ...) 检查测试文章确实出现在里面
 
 """

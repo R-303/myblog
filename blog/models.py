@@ -112,3 +112,26 @@ class Post(models.Model):
 - Post.objects 查全部文章，Post.published 只查已发布文章。
 - save() 里那段逻辑：第一次把文章设为已发布时，自动填发布时间。
 """
+
+class SiteSetting(models.Model):
+    """  全局站点设置，数据库只保留一行"""
+
+    site_name=models.CharField("站点名称",max_length=80,default="我的博客")
+    page_size=models.PositiveSmallIntegerField("每页文章数",default=5)
+    updated_at=models.DateTimeField("更新时间",auto_now=True)
+
+    class Meta:
+        verbose_name="站点设置"
+        verbose_name_plural=verbose_name
+
+    def __str__(self):
+        return self.site_name
+
+    def save(self,*args,**kwargs):
+# 强制主键为 1，避免后台误建多行全局设置。
+        self.pk=1
+        super().save(*args,**kwargs)
+
+    @classmethod
+    def load(cls):
+        return cls.objects.get_or_create(pk=1)[0]

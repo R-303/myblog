@@ -2,18 +2,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{% block title %}我的博客{% endblock %}</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 </head>
 <body>
-  <header class="site-header">
-      <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
-  </header>
-  <main class="container">
-      {% block content %}{% endblock %}
-  </main>
+    <header class="site-header">
+        <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
+    </header>
+    <main class="container page-grid">
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        {% include "includes/sidebar.html" %}
+    </main>
 </body>
 </html>

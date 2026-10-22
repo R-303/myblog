@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.http import HttpRequest
 
 # Register your models here.
 
-from .models import Category,Post,Tag
+from .models import Category,Post,Tag,SiteSetting
 
 #语法糖 ,添加功能
 @admin.register(Post)
@@ -25,6 +26,12 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     prepopulated_fields = {"slug":["name"]}
 
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    list_display = ["site_name","page_size","updated_at"]
+
+    def has_add_permission(self, request):
+        return not SiteSetting.objects.exists()
 """
 Admin 是 Django 自带的后台管理界面。
 @admin.register 把模型注册进去，

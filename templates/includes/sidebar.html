@@ -1,0 +1,44 @@
+<aside class="sidebar">
+    <section>
+        <h2>最新文章</h2>
+        <ul>
+            {% for post in latest_posts %}
+                <li>
+                    <a href="{% url 'blog:detail' post.pk %}">{{ post.title }}</a>
+                </li>
+            {% empty %}
+                <li>暂无文章</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>分类</h2>
+        <ul>
+            {% for category in sidebar_categories %}
+                <li>
+                    <a href="{% url 'blog:category' category.slug %}">
+                        {{ category.name }}（{{ category.total }}）
+                    </a>
+                </li>
+            {% empty %}
+                <li>暂无分类</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>归档</h2>
+        <ul>
+            {% for item in archives %}
+                <li>
+                    <a href="{% url 'blog:archive' item.published_at__year item.published_at__month %}">
+                        {{ item.published_at__year }}年{{ item.published_at__month }}月 （{{ item.total }}）
+                    </a>
+                </li>
+            {% empty %}
+                <li>暂无归档</li>
+            {% endfor %}
+        </ul>
+    </section>
+</aside>
