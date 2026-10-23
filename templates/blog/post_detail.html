@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load blog_extras %}
 
 {% block title %}{{ post.title }} | 我的博客{% endblock %}
 
@@ -16,7 +17,7 @@
     <p class="summary">{{ post.summary }}</p>
   {% endif %}
 
-  <div class="post-body">{{ post.body|linebreaks }}</div>
+  <div class="post-body">{{ post.body|markdown_html }}</div>
 
   {% if post.tags.all %}
     <p class="tags">

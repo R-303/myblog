@@ -118,6 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+PYGMENTS_STYLE="default"   #增加pygments样式
 STATICFILES_DIRS=[BASE_DIR / 'static']
 # STATIC_URL 是浏览器访问静态文件时用的 URL 前缀；STATICFILES_DIRS 告诉 Django 去哪里找这些文件。
 

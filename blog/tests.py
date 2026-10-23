@@ -175,6 +175,17 @@ class PostViewTests(TestCase):
         self.assertIn(self.category,response.context["sidebar_categories"])
 
 
+    def test_detail_renders_markdown_and_codehilite(self):
+        self.post.body="## 标题\n\n```python\nprint('hello')\n```"
+        self.post.save()
+
+        response=self.client.get(
+            reverse("blog:detail",args=[self.post.pk])
+        )
+
+        self.assertContains(response,"<h2>标题</h2>")
+        self.assertContains(response,"codehilite")
+        self.assertContains(response,"print")
 """
 这三个测试验证：
 - 首页只显示已发布文章；
@@ -184,5 +195,11 @@ class PostViewTests(TestCase):
 reverse("blog:list") 的作用是：把 URL 名字翻译成真实路径
 response 不是“接收创造的数据”，而是服务器返回的响应对象
 assertIn(self.post, ...) 检查测试文章确实出现在里面
+
+def test_detail_renders_markdown_and_codehilite(self):
+这个测试验证三件事：
+- Markdown 标题变成了 HTML 标题；
+- 代码块有 .codehilite 容器；
+- 代码内容仍然存在。
 
 """
