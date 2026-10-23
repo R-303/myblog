@@ -192,3 +192,59 @@ a:hover {
     max-width: 100%;
     height: auto;
 }
+
+.messages {
+    max-width: 1040px;
+    margin:16px auto 0;
+    padding:0 20px;
+}
+
+.messages p {
+    margin:0;
+    padding:10px 14px;
+    border:1px solid #a7f3d0;
+    border-radius:8px;
+    background:#ecfdf5;
+}
+
+.comments {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top:1px solid var(--border);
+}
+
+.comment {
+    padding:14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.comment:last-of-type {
+    border-bottom:0;
+}
+
+.comment-form {
+    margin-top:20px;
+}
+
+.comment-form p {
+    margin:10px 0;
+}
+
+.comment-form input,
+.comment-form textarea {
+    width: 100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius: 8px;
+    font:inherit;
+    background: #fff;
+}
+
+.comment-form button {
+    padding:9px 19px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent);
+    color:#fff;
+    cursor:pointer;
+}

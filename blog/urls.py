@@ -11,6 +11,7 @@ urlpatterns=[
     path("category/<slug:slug>/",views.category_posts,name="category"),
     path("tag/<slug:slug>/",views.tag_posts,name="tag"),
     path("archive/<int:year>/<int:month>/",views.archive_posts,name="archive"),
+    path("post/<int:pk>/comment/",views.add_comment,name="comment")
 
 ]
 

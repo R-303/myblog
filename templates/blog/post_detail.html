@@ -27,4 +27,26 @@
         {% endfor %}
     </p>
   {% endif %}
+
+  <section class="comments">
+      <h2>评论 （{{ post.comments.count }}）</h2>
+
+      {% for comment in  post.comments.all %}
+        <article class="comment">
+            <p class="meta">
+                {{ comment.nickname }}
+                · {{ comment.created_at|date:"Y-m-d H:i" }}
+            </p>
+            <p>{{ comment.body|linebreaks }}</p>
+        </article>
+      {% empty %}
+        <p>还没有评论，写第一条吧。 </p>
+      {% endfor %}
+
+      <form method="post" action="{% url 'blog:comment' post.pk %}" class="comment-form">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">提交评论</button>
+      </form>
+  </section>
 {% endblock %}

@@ -16,7 +16,7 @@ from django.db.models.deletion import ProtectedError
 #ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
 from django.test import TestCase
 # TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
-from .models import Category,Post,Tag,SiteSetting
+from .models import Category,Post,Tag,SiteSetting,Comment
 #要测的三个模型
 
 #把所有模型测试放在一个类里。测试运行器会自动找到这个类，以及里面所有以 test_ 开头的方法。
@@ -186,6 +186,40 @@ class PostViewTests(TestCase):
         self.assertContains(response,"<h2>标题</h2>")
         self.assertContains(response,"codehilite")
         self.assertContains(response,"print")
+
+    def test_detail_renders_comment_form(self):
+        response=self.client.get(
+            reverse("blog:detail",args=[self.post.pk])
+        )
+        self.assertContains(response,'name="nickname"')
+        self.assertContains(response,'name="email"')
+        self.assertContains(response,'name="body"')
+
+    def test_comment_can_be_created_and_is_escaped(self):
+        response=self.client.post(
+            reverse("blog:comment",args=[self.post.pk]),
+            {
+                "nickname":"小易",
+                "email":"yi@example.com",
+                "body":"<script>alert(1)</script>这条评论很有用。",
+            },
+            follow=True,
+        )
+        self.assertContains(response,"已提交")
+        self.assertContains(response,"&lt;script&gt;")
+        self.assertNotContains(response,"<script>alert(1)</script>")
+        self.assertEqual(self.post.comments.count(),1)
+
+    def test_invalid_comment_is_not_saved(self):
+        self.client.post(
+            reverse("blog:comment",args=[self.post.pk]),
+            {
+                "nickname":"",
+                "email":"bad-email",
+                "body":"",
+            },
+        )
+        self.assertEqual(Comment.objects.count(),0)
 """
 这三个测试验证：
 - 首页只显示已发布文章；

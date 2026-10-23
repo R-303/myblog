@@ -113,6 +113,30 @@ class Post(models.Model):
 - save() 里那段逻辑：第一次把文章设为已发布时，自动填发布时间。
 """
 
+class Comment(models.Model):
+    post=models.ForeignKey(
+        Post,
+        verbose_name="文章",
+        on_delete=models.CASCADE,
+        related_name="comments",
+    )
+    nickname=models.CharField("昵称",max_length=30)
+    email=models.EmailField("邮箱")
+    body=models.TextField("内容",max_length=2000)
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+
+    class Meta:
+        verbose_name="评论"
+        verbose_name_plural=verbose_name
+        ordering=["created_at"]
+
+    def __str__(self):
+        return f"{self.nickname} 评论 《{self.post.title}》"
+
+"""
+增加评论类
+related_name="comments" 以后可以写 post.comments.all()。
+"""
 class SiteSetting(models.Model):
     """  全局站点设置，数据库只保留一行"""
 

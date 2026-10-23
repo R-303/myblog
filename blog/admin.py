@@ -3,7 +3,7 @@ from django.http import HttpRequest
 
 # Register your models here.
 
-from .models import Category,Post,Tag,SiteSetting
+from .models import Category,Post,Tag,SiteSetting,Comment
 
 #语法糖 ,添加功能
 @admin.register(Post)
@@ -25,6 +25,12 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ["name","slug","created_at"]
     search_fields = ["name"]
     prepopulated_fields = {"slug":["name"]}
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ["nickname","post","email","created_at"]
+    search_fields = ["nickname","email","body"]
+    list_filter = ["created_at"]
 
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):

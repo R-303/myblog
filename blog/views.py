@@ -1,9 +1,12 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render,redirect
 from django.db.models import F,Count,Q
 from django.core.paginator import Paginator
 from django.utils import archive
+from django.contrib import messages
+
 
 from .models import Post,Category,Tag,SiteSetting
+from .forms import CommentForm
 
 def sidebar_context():
     archives=(
@@ -55,10 +58,35 @@ def post_detail(request,pk):
     )
     Post.objects.filter(pk=pk).update(views=F("views")+1)
     post.refresh_from_db(fields=["views"])
+
+    form=CommentForm()
     return render(request,"blog/post_detail.html",{
-        **sidebar_context(),
         "post":post,
+        "form":form,
+        **sidebar_context(),
     })
+
+def add_comment(request,pk):
+    post=get_object_or_404(Post.published,pk=pk)
+
+    if request.method=="POST":
+        form=CommentForm(request.POST)
+        if form.is_valid():
+            comment=form.save(commit=False)
+            comment.post=post
+            comment.save()
+            messages.success(request,"评论已提交。")
+            return redirect("blog:detail",pk=post.pk)
+        messages.error(request,"请检查昵称、邮箱和评论内容。")
+    else:
+        form=CommentForm()
+
+    return render(request,"blog/post_detail.html",{
+        "post":post,
+        "form":form,
+        **sidebar_context(),
+    })
+# 这里用了 POST → 保存 → 重定向，避免用户刷新页面时重复提交评论。
 
 def category_posts(request,slug):
     category=get_object_or_404(Category,slug=slug)
