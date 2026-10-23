@@ -28,6 +28,19 @@
     </p>
   {% endif %}
 
+  <div class="votes">
+      <form method="post" action="{% url 'blog:vote' post.pk 'like' %}">
+          {% csrf_token %}
+          <button type="submit">顶 （{{ post.likes }}）</button>
+      </form>
+
+
+      <form method="post" action="{% url 'blog:vote' post.pk 'dislike' %}">
+          {% csrf_token %}
+          <button type="submit">踩 （{{ post.dislikes }}）</button>
+      </form>
+  </div>
+
   <section class="comments">
       <h2>评论 （{{ post.comments.count }}）</h2>
 

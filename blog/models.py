@@ -80,6 +80,9 @@ class Post(models.Model):
 
     published_at=models.DateTimeField("发布时间",null=True,blank=True)
     views=models.PositiveIntegerField("浏览量",default=0)
+    likes=models.PositiveIntegerField("顶",default=0)
+    dislikes=models.PositiveIntegerField("踩",default=0)
+
     created_at=models.DateTimeField("创建时间",auto_now_add=True)
     updated_at=models.DateTimeField("更新时间",auto_now=True)
 
@@ -132,11 +135,45 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.nickname} 评论 《{self.post.title}》"
-
 """
 增加评论类
 related_name="comments" 以后可以写 post.comments.all()。
 """
+
+class Vote(models.Model):
+    post=models.ForeignKey(
+        Post,
+        verbose_name="文章",
+        on_delete=models.CASCADE,
+        related_name="votes",
+    )
+    session_key=models.CharField(
+        "浏览器标识",
+        max_length=64,
+        db_index=True,
+    )
+    value=models.SmallIntegerField(
+        "票值",
+        choices=[(1,"顶"),(-1,"踩")],
+    )
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+
+    class Meta:
+        verbose_name="投票"
+        verbose_name_plural=verbose_name
+        constraints=[
+            models.UniqueConstraint(
+                fields=["post","session_key"],
+                name="unique_post_vote",
+            )
+        ]
+
+        def __str__(self):
+            return f"{self.post.title} - {self.get_value_display()}"
+"""
+UniqueConstraint 是最后一道保险：同一个浏览器对同一篇文章，数据库层面也只允许一条投票记录。
+"""
+
 class SiteSetting(models.Model):
     """  全局站点设置，数据库只保留一行"""
 

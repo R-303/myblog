@@ -3,9 +3,10 @@ from django.db.models import F,Count,Q
 from django.core.paginator import Paginator
 from django.utils import archive
 from django.contrib import messages
+from django.http import Http404
+from django.views.decorators.http import require_POST
 
-
-from .models import Post,Category,Tag,SiteSetting
+from .models import Post,Category,Tag,SiteSetting,Vote
 from .forms import CommentForm
 
 def sidebar_context():
@@ -87,6 +88,45 @@ def add_comment(request,pk):
         **sidebar_context(),
     })
 # 这里用了 POST → 保存 → 重定向，避免用户刷新页面时重复提交评论。
+
+@require_POST
+def vote(request,pk,value):
+    if value  not in {"like","dislike"}:
+        raise Http404("Oh,无效的投票类型!")
+
+    post=get_object_or_404(Post.published,pk=pk)
+
+    if not request.session.session_key:
+        request.session.create()
+
+    vote_value=1 if value=="like" else -1
+
+    _,created=Vote.objects.get_or_create(
+        post=post,
+        session_key=request.session.session_key,
+        defaults={"value":vote_value},
+    )
+
+    if not created:
+        messages.info(request,"你已经对这篇文章投过票了。")
+        return redirect("blog:detail",pk=post.pk)
+
+    field="likes" if vote_value ==1 else "dislikes"
+    Post.objects.filter(pk=post.pk).update(
+        **{field:F(field)+1}
+    )
+
+    messages.success(request,"感谢亲的反馈。")
+    return redirect("blog:detail",pk=post.pk)
+"""
+流程是：
+1. 只允许 POST，防止用 GET 链接刷票；
+2. 先拿到或创建 Session；
+3. 尝试创建一条 Vote；
+4. 如果已经存在，就提示“已投过”；
+5. 只有新建成功，才给文章计数 +1。
+"""
+
 
 def category_posts(request,slug):
     category=get_object_or_404(Category,slug=slug)

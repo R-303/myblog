@@ -16,7 +16,7 @@ from django.db.models.deletion import ProtectedError
 #ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
 from django.test import TestCase
 # TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
-from .models import Category,Post,Tag,SiteSetting,Comment
+from .models import Category,Post,Tag,SiteSetting,Comment,Vote
 #要测的三个模型
 
 #把所有模型测试放在一个类里。测试运行器会自动找到这个类，以及里面所有以 test_ 开头的方法。
@@ -220,6 +220,30 @@ class PostViewTests(TestCase):
             },
         )
         self.assertEqual(Comment.objects.count(),0)
+
+    def test_like_can_only_be_voted_once_per_session(self):
+        url=reverse("blog:vote",args=[self.post.pk,"like"])
+
+        self.client.post(url)
+        self.client.post(url)
+
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.likes,1)
+        self.assertEqual(Vote.objects.count(),1)
+
+    def test_dislike_increments_dislikes(self):
+        self.client.post(
+            reverse("blog:vote",args=[self.post.pk,"dislike"])
+        )
+
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.dislikes,1)
+
+    def test_vote_requires_post(self):
+        response=self.client.get(
+            reverse("blog:vote",args=[self.post.pk,"like"])
+        )
+        self.assertEqual(response.status_code,405)
 """
 这三个测试验证：
 - 首页只显示已发布文章；
@@ -236,4 +260,6 @@ def test_detail_renders_markdown_and_codehilite(self):
 - 代码块有 .codehilite 容器；
 - 代码内容仍然存在。
 
+def test_vote_requires_post(self):
+第三个测试验证：直接访问投票 URL（GET）应该被拒绝，投票只能通过表单 POST。
 """

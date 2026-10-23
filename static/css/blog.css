@@ -248,3 +248,29 @@ a:hover {
     color:#fff;
     cursor:pointer;
 }
+
+.votes {
+    display: flex;
+    gap:10px;
+    margin:22px 0;
+}
+
+.votes form {
+    margin: 0;
+}
+
+.votes button {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    color:var(--text);
+    cursor:pointer;
+    font:inherit;
+}
+
+.votes button :hover {
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
