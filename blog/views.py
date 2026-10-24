@@ -46,12 +46,24 @@ def post_list(request):
         .select_related("category")
         .prefetch_related("tags")
     )
+
+    query=request.GET.get("q","").strip()
+
+    if query:
+        posts=posts.filter(
+            Q(title__icontains=query)
+            | Q(summary__icontains=query)
+            | Q(body__icontains=query)
+        )
+
     page_obj=paginate_posts(request,posts)
+
     return render(request,"blog/post_list.html",{
         **sidebar_context(),
         "posts":page_obj,
         "page_obj":page_obj,
-        "page_title":"文章列表",
+        "query":query,
+        "page_title":f"搜索： {query}" if query else "文章列表",
     })
 
 def post_detail(request,pk):

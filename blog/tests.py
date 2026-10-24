@@ -312,3 +312,115 @@ class AuthTests(TestCase):
         response=self.client.get(reverse("blog:logout"))
         self.assertEqual(response.status_code,405)
 # 现在测试总数应该从 18 增加到 21。
+
+
+class SearchTests(TestCase):
+    def setUp(self):
+        self.user=get_user_model().objects.create_user(
+            username="searcher"
+        )
+        self.category=Category.objects.create(
+            name="Python",
+            slug="python",
+        )
+        self.post=Post.objects.create(
+            title="Django 搜索测试",
+            slug="search-post",
+            summary="关于搜索的文章",
+            body="这里是 Django 正文。",
+            category=self.category,
+            author=self.user,
+            status=Post.Status.PUBLISHED,
+        )
+
+    def test_search_finds_published_post(self):
+        response=self.client.get(
+            reverse("blog:list"),
+            {"q":"Django"},
+        )
+        self.assertContains(response,"Django 搜索测试")
+        self.assertContains(response,"搜索： Django")
+
+    def test_search_does_not_show_draft(self):
+        Post.objects.create(
+            title="Django 草稿",
+            slug="django-draft",
+            body="Django 草稿正文",
+            category=self.category,
+            author=self.user,
+        )
+        response=self.client.get(
+            reverse("blog:list"),
+            {"q":"Django"},
+        )
+        self.assertContains(response,"Django 搜索测试")
+        self.assertNotContains(response,"Django 草稿")
+
+    def test_search_pagination_preserves_query(self):
+        SiteSetting.objects.update_or_create(
+            pk=1,
+            defaults={"page_size":1},
+        )
+        Post.objects.create(
+            title="Django 第二篇",
+            slug="django-second",
+            body="Django 第二篇正文",
+            category=self.category,
+            author=self.user,
+            status=Post.Status.PUBLISHED,
+        )
+
+        response=self.client.get(
+            reverse("blog:list"),
+            {"q":"Django"},
+        )
+
+        self.assertEqual(len(response.context["page_obj"]),1)
+        self.assertTrue(response.context["page_obj"].has_next())
+        self.assertContains(response,"q=Django")
+
+
+class AdminStatsTests(TestCase):
+    def test_changelist_shows_blog_stats(self):
+        user=get_user_model().objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="strong-password-123",
+        )
+        category=Category.objects.create(
+            name="Python",
+            slug="python",
+        )
+        Post.objects.create(
+            title="已发布文章",
+            slug="stats-published",
+            body="正文",
+            category=category,
+            author=user,
+            status=Post.Status.PUBLISHED,
+            views=4,
+        )
+        Post.objects.create(
+            title="草稿文章",
+            slug="stats-draft",
+            body="草稿正文",
+            category=category,
+            author=user,
+            views=2,
+        )
+
+        self.client.force_login(user)
+        response=self.client.get(
+            reverse("admin:blog_post_changelist")
+        )
+
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"博客统计")
+
+        stats=response.context["blog_stats"]
+        self.assertEqual(stats["total"],2)
+        self.assertEqual(stats["published"],1)
+        self.assertEqual(stats["draft"],1)
+        self.assertEqual(stats["views"],6)
+        self.assertEqual(stats["average_views"],3.0)
+

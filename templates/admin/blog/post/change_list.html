@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+  <div class="module" style="margin-bottom: 20px; padding: 12px 16px;">
+      <h2>博客统计</h2>
+      <p>
+          文章总数：{{ blog_stats.total }}
+          ·已发布：{{ blog_stats.published }}
+          ·草稿：{{ blog_stats.draft }}
+          ·总浏览量：{{ blog_stats.views }}
+          ·平均浏览量：{{ blog_stats.average_views|floatformat:1 }}
+      </p>
+  </div>
+
+  {{ block.super }}
+{% endblock %}

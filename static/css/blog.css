@@ -338,3 +338,40 @@ a:hover {
     color:#fff;
     cursor:pointer;
 }
+
+.search-form {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    max-width: 360px;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid  var(--border);
+    border-radius: 8px;
+    font: inherit;
+}
+
+.search-form button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+}
+
+@media (max-width: 760px) {
+    .header-inner {
+        flex-wrap: wrap;
+    }
+
+    .search-form {
+        order: 3;
+        width: 100%;
+        max-width: none;
+    }
+}

@@ -14,6 +14,16 @@
         <div class="header-inner">
             <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
 
+            <form method="get" action="{% url 'blog:list' %}" class="search-form">
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ query|default:'' }}"
+                    placeholder="搜索文章"
+                >
+                <button type="submit">搜索</button>
+            </form>
+
             <nav class="auth-links">
                 {% if user.is_authenticated %}
                     <span>{{ user.username }}</span>
