@@ -1,5 +1,7 @@
 from django import forms
 from .models import Comment
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -19,3 +21,13 @@ class CommentForm(forms.ModelForm):
                 }
             ),
         }
+
+User=get_user_model()
+
+class UserRegistrationForm(UserCreationForm):
+    email=forms.EmailField(required=True)
+
+    class Meta(UserCreationForm.Meta):
+        model=User
+        fields=["username","email"]
+# UserCreationForm 自带 password1、password2 和密码校验，不用自己写密码哈希。

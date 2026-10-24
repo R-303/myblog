@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
+from django.conf.global_settings import LOGIN_URL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -122,6 +123,10 @@ PYGMENTS_STYLE="default"   #增加pygments样式
 STATICFILES_DIRS=[BASE_DIR / 'static']
 # STATIC_URL 是浏览器访问静态文件时用的 URL 前缀；STATICFILES_DIRS 告诉 Django 去哪里找这些文件。
 
+LOGIN_URL="blog:login"
+LOGIN_REDIRECT_URL="blog:list"
+LOGOUT_REDIRECT_URL="blog:list"
+# 以后如果有页面要求登录，Django 会跳到我们的登录页，而不是默认的 /accounts/login/。
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 

@@ -304,9 +304,12 @@ uv run manage.py runserver
 **面试问题**
 
 - 在浏览器输入一个网址，到看到页面，中间发生了什么？
+  - 浏览器拿到url，先是DNS解析域名，然后拿着域名给服务器，发起HTTP请求，服务器返回网页内容，浏览器得到内容，网页打开
 - 为什么项目包叫 `config`，不叫 `mysite`？
+- config是总体，决定路由分配，网络请求等
+- mysite只是实际运行的开发，在config里面
 - `requirements.txt` 和 `pyproject.toml` + `uv.lock` 有什么区别？
-
+uv.lock是锁，锁住仓库数据
 ### 阶段 1：数据建模与 Admin
 
 **对应原文**：第 2 篇《模型与后台》
@@ -318,6 +321,7 @@ uv run manage.py runserver
 - `on_delete` 的 `CASCADE` 与 `PROTECT` 分别意味着什么；
 - 迁移（migration）是什么，为什么不能直接改数据库；
 - QuerySet 的惰性求值；
+- 惰性，写的时候不会调用SQL查数据，只有在真正需要用的时候才调用SQL
 - Admin 是 Django 自带的后台，不是你自己写的前端。
 
 **你要做**
@@ -339,10 +343,16 @@ uv run manage.py runserver
 
 **面试问题**
 
-- 分类为什么用外键，标签为什么用多对多？
+- 分类为什么用外键，
+- 一对多的关系，多的一方使用外键foreignkey指向单一的那个
+- 标签为什么用多对多？
+- 因为一篇文章可以多个标签，一个标签也有多个文章
 - `on_delete=PROTECT` 和 `CASCADE` 的区别？
+- CASCADE是连带删除删除外键指向的对象时候，外键的引用也会删除，故称为连带
+- PROTECT则是保护，不会连带删除，有阻止性保护数据的作用
 - 迁移文件能不能删？多人协作时迁移冲突怎么办？
-
+不能删吧，不能直接在数据库改。要先上传到git仓库，有回滚空间
+- 
 ### 阶段 2：列表页与详情页
 
 **对应原文**：第 3 篇《页面与详情》
@@ -350,10 +360,45 @@ uv run manage.py runserver
 **你要理解**
 
 - URLconf 如何把路径映射到视图；
+- <int:pk> 里的 int 是转换器，它会把 URL 里的字符串转成 Python 类型再传给视图：
+- URLconf 是电话总机接线员。号码表从上往下查，“blog/5/ 打给博客详情分机”，查到就接通，不再往下翻。<int:pk> 是接线员顺手把“5”翻译成整数再转给分机，省得分机自己转。
+- 
 - 函数视图的 `request` 里有什么；
+- 函数视图的第一个参数 request 是一个 HttpRequest 对象，它封装了这次请求的所有信息
+- request.META	原始 WSGI 环境字典
+- request.COOKIES	Cookie 字典
+- request.session	会话（需 Session 中间件）
+- request.user	当前用户（需 Auth 中间件
+- 
 - `render()`、`get_object_or_404()`、`reverse()`；
+- render()：把模板和数据“合成”成响应
+- render(request, template_name, context) 做三件事：
+     加载 template_name 指定的模板；
+     用 context 字典里的数据填充模板变量；
+     把渲染好的 HTML 包装成 HttpResponse 返回。
+- get_object_or_404()：查不到就“优雅地 404”
+- reverse()：用“名字”反查 URL，而不是写死路径
+-   它根据 URLconf 里 name= 起的名字，反向生成 URL 路径。参数用 kwargs（关键字）或 args（位置）
+-   为什么用它：
+   你在模板里写 <a href="/blog/5/">，一旦 URL 规则从 /blog/5/ 改成 /posts/5/，所有硬编码的链接全废。
+   用 {% url 'blog:post_detail' post.pk %} 或 reverse(...)，URL 规则改了，所有链接自动跟着变。
+- 
 - 模板继承：`base.html` 定义骨架，子模板填 block；
+- base是地基，子模版在地基的基础上不断优化丰富
+-  模板继承是 Django 模板的“户型图 + 装修”机制
+- {% block 名字 %} 是“预留空位”，里面可以写默认内容，子模板可以覆盖
+- {% extends "base.html" %} 必须是子模板的第一行（除注释外
+- 关键好处：导航栏、页脚、CSS 引入这些全站共用的东西只写一次，改一处全站生效。
+- 
 - 静态文件为什么不能直接写死路径。
+静态文件是 CSS、JavaScript、图片、字体等不经过视图渲染的资源
+- 2. 文件名可能带哈希，路径会变
+生产环境常用 ManifestStaticFilesStorage，给每个静态文件加内容哈希（如 style.3f2a1b.css），用于长期缓存。文件名变了，写死的路径就对不上。
+3. 多环境不一致
+开发、测试、生产环境的静态文件根路径可能不同。写死路径意味着同一份模板在不同环境要改来改去
+正确做法：用 {% static %} 和 STATIC_URL
+{% static %} 会根据 settings.py 里的 STATIC_URL 和静态文件存储配置，动态生成正确的 URL。部署时改 STATIC_URL 或换存储后端，模板一行不用改。
+
 
 **你要做**
 
@@ -376,6 +421,8 @@ uv run manage.py runserver
 - Django 是怎么根据 URL 找到视图的？
 - 模板继承解决了什么问题？
 - 为什么用 `get_object_or_404`，不直接 `Post.objects.get()`？
+- 若失败，优雅的返回404
+- 直接返回500，错误后果较重
 
 ### 阶段 3：Markdown 与代码高亮
 
@@ -485,12 +532,16 @@ uv run manage.py runserver
 
 **你要理解**
 
-- Django 自带的 `auth` 应用和 `User` 模型；
-- 密码为什么不能明文存，Django 用什么哈希；
-- 登录、登出、Session 的关系；
+- Django 自带的 `auth` 应用和 `User` 模型；auth模型是自动生成和更新其自身的 migration。User 是 auth 应用提供的默认用户模型，本质上就是一张表，里面存着每个用户的身份信息
+- 密码为什么不能明文存，Django 用什么哈希；明文密码，一旦数据库受攻击，就会泄露。Django 的做法：单向哈希（密码->哈希,哈希不可->密码） + 盐（随机字符串，加在密码之中共同生成哈希表） + 多次迭代（故意多次慢0.秒哈希迭代）
+- 登录、登出、Session 的关系；Session 就是服务器用来“记住你”的机制。登陆成功，后端数据库的 django_session 表 创建会话记录，保存访问者id，服务器把这个id通过cookie发给浏览器，之后浏览器每次访问都带上id
 - 认证（你是谁）与授权（你能做什么）的区别；
 - 为什么登出要用 POST + CSRF。
+- GET是只读请求，，登出会销毁session记录之类，有负面影响，
+- 不安全，GET请求方便，而POST难
 
+Cookie 是服务器让浏览器存的一小段文本，浏览器之后每次访问同一个网站时，都会自动把它带回去
+CSRF 跨站请求伪造，加个tokne，防止自动窃取信息
 **你要做**
 
 - 写注册表单，复用 `UserCreationForm`；

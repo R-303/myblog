@@ -263,3 +263,52 @@ def test_detail_renders_markdown_and_codehilite(self):
 def test_vote_requires_post(self):
 第三个测试验证：直接访问投票 URL（GET）应该被拒绝，投票只能通过表单 POST。
 """
+
+class AuthTests(TestCase):
+    def test_register_creates_user_and_logs_in(self):
+        response=self.client.post(
+            reverse("blog:register"),
+            {
+                "username":"new_edu_user",
+                "email":"new@edu.com",
+                "password1":"strong_password_123",
+                "password2":"strong_password_123",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(
+            get_user_model().objects.filter(username="new_edu_user").count(),
+            1,
+        )
+        self.assertTrue(response.context["user"].is_authenticated)
+        self.assertContains(response,"注册成功")
+
+    def test_login_and_logout(self):
+        get_user_model().objects.create_user(
+            username="alice",
+            password="strong-password-123",
+        )
+
+        response=self.client.post(
+            reverse("blog:login"),
+            {
+                "username":"alice",
+                "password":"strong-password-123",
+            },
+            follow=True,
+        )
+
+        self.assertTrue(response.context["user"].is_authenticated)
+        self.assertContains(response,"alice")
+
+        response=self.client.post(
+            reverse("blog:logout"),
+            follow=True,
+        )
+        self.assertFalse(response.context["user"].is_authenticated)
+
+    def test_logout_rejects_get(self):
+        response=self.client.get(reverse("blog:logout"))
+        self.assertEqual(response.status_code,405)
+# 现在测试总数应该从 18 增加到 21。

@@ -11,7 +11,22 @@
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
+        <div class="header-inner">
+            <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
+
+            <nav class="auth-links">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}</span>
+                    <form method="post" action="{% url 'blog:logout' %}">
+                        {% csrf_token %}
+                        <button thpe="submit">退出</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'blog:login' %}">登录</a>
+                    <a href="{% url 'blog:register' %}">注册</a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
 
     {% if messages %}

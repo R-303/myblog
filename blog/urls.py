@@ -16,7 +16,18 @@ urlpatterns=[
         "post/<int:pk>/vote/<str:value>/",
         views.vote,
         name="vote",
-    )
+    ),
+    path("account/register/",views.register,name="register"),
+    path(
+        "account/login/",
+        views.BlogLoginView.as_view(),
+        name="login",
+    ),
+    path(
+        "account/logout/",
+        views.BlogLogoutView.as_view(),
+        name="logout"
+    ),
 ]
 
 """
@@ -30,3 +41,5 @@ name="list" 给路由起名，模板里可以写 {% url 'blog:list' %}。
 /tag/django/
 /archive/2026/10/
 """
+
+# Django 6.1 的 LogoutView 只接受 POST，所以下一步导航栏里退出必须用表单。

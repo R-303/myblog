@@ -5,9 +5,11 @@ from django.utils import archive
 from django.contrib import messages
 from django.http import Http404
 from django.views.decorators.http import require_POST
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView,LogoutView
 
 from .models import Post,Category,Tag,SiteSetting,Vote
-from .forms import CommentForm
+from .forms import CommentForm,UserRegistrationForm
 
 def sidebar_context():
     archives=(
@@ -182,3 +184,31 @@ def archive_posts(request,year,month):
 - sidebar_context() 给所有页面提供最新文章、分类和归档；
 - 分类数量只统计已发布文章。
 """
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("blog:list")
+
+    form=UserRegistrationForm(request.POST or None)
+
+    if request.method=="POST" and form.is_valid():
+        user=form.save()
+        login(
+            request,
+            user,
+            backend="django.contrib.auth.backends.ModelBackend",
+        )
+        messages.success(request,"注册成功，欢迎您的加入。")
+        return redirect("blog:list")
+    return render(request,"registration/register.html",{
+        "form":form,
+    })
+
+class BlogLoginView(LoginView):
+    template_name = "registration/login.html"
+
+class BlogLogoutView(LogoutView):
+    pass
+
+# 显式写 backend 是为了明确告诉 Django 用哪个认证后端，避免以后加多个后端时产生歧义。
+
