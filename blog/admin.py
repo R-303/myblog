@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from django.db.models import Count,Q,Sum
 # Register your models here.
 
-from .models import Category,Post,Tag,SiteSetting,Comment,Vote
+from .models import Category,Post,Tag,SiteSetting,Comment,Vote,Attachment
 
 #语法糖 ,添加功能
 @admin.register(Post)
@@ -74,3 +74,9 @@ Admin 是 Django 自带的后台管理界面。
 list_display 控制列表显示哪些列，
 search_fields 控制搜索框搜哪些字段。
 """
+
+@admin.register(Attachment)
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ["title","post","created_at"]
+    search_fields = ["title","post__title"]
+    list_filter = ["created_at"]

@@ -28,6 +28,21 @@
     </p>
   {% endif %}
 
+  {% if post.attachments.all %}
+    <section class="attachments">
+       {% for attachment in post.attachments.all %}
+          <figure>
+              <img
+                  src="{{ attachment.image.url }}"
+                  alt="{{ attachment.title|default:'文章图片' }}"
+              >
+              {% if attachment.title %}
+                <figcaption>{{ attachment.title }}</figcaption>
+              {% endif %}
+          </figure>
+       {% endfor %}
+    </section>
+  {% endif %}
   <div class="votes">
       <form method="post" action="{% url 'blog:vote' post.pk 'like' %}">
           {% csrf_token %}

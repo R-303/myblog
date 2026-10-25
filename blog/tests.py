@@ -1,7 +1,14 @@
+import tempfile
+
 from django.contrib import auth
 from django.test import TestCase
 from  django.urls import reverse
 from unicodedata import category
+
+from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 # Create your tests here.
 """
@@ -16,8 +23,9 @@ from django.db.models.deletion import ProtectedError
 #ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
 from django.test import TestCase
 # TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
-from .models import Category,Post,Tag,SiteSetting,Comment,Vote
+from .models import Category,Post,Tag,SiteSetting,Comment,Vote,Attachment
 #要测的三个模型
+from .views import cached_sidebar_context
 
 #把所有模型测试放在一个类里。测试运行器会自动找到这个类，以及里面所有以 test_ 开头的方法。
 class PostModelTests(TestCase):
@@ -424,3 +432,55 @@ class AdminStatsTests(TestCase):
         self.assertEqual(stats["views"],6)
         self.assertEqual(stats["average_views"],3.0)
 
+
+class AttachmentTests(TestCase):
+    def test_attachment_uploads_and_render(self):
+        user=get_user_model().objects.create_user(username="uploader")
+        category=Category.objects.create(name="Python",slug="python")
+        post=Post.objects.create(
+            title="带图片的文章",
+            slug="post-width-image",
+            body="正文",
+            category=category,
+            author=user,
+            status=Post.Status.PUBLISHED,
+        )
+
+        png=bytes.fromhex(
+            "89504e470d0a1a0a0000000d494844520000000100000001"
+            "08060000001f15c4890000000a49444154789c6300010000050001"
+        )#这段是一张 1×1 像素 PNG 图片的二进制内容，用十六进制写出来了 它把每两个十六进制字符转成一个字节  png 变量里装的不是哈希值，而是一张真正的 PNG 图片的原始字节
+
+        with tempfile.TemporaryDirectory() as root:
+            with self.settings(MDIA_ROOT=root):
+                attachment=Attachment.objects.create(
+                    post=post,
+                    title="结构图",
+                    image=SimpleUploadedFile(
+                        "diagram.png",
+                        png,
+                        content_type="image/png",
+                    ),
+                )
+
+                response=self.client.get(
+                    reverse("blog:detail",args=[post.pk])
+                )
+
+                self.assertContains(response,"结构图")
+                self.assertContains(response,attachment.image.url)
+
+class SidebarCacheTests(TestCase):
+    def test_cached_sidebar_reuses_result(self):
+        cache.clear()
+
+        with CaptureQueriesContext(connection) as first:
+            cached_sidebar_context()
+
+        with CaptureQueriesContext(connection) as second:
+            cached_sidebar_context()
+
+        self.assertLess(
+            len(second.captured_queries),
+            len(first.captured_queries),
+        )

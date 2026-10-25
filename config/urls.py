@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include,path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,3 +25,10 @@ urlpatterns = [
 ]
 
 # include("blog.urls") 的意思是：除了 /admin/，其他路径都交给 blog 应用继续匹配。
+
+if settings.DEBUG:
+    urlpatterns +=static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )
+# 这只用于开发环境。生产环境由 Nginx 提供媒体文件。

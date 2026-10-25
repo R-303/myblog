@@ -7,6 +7,7 @@ from django.http import Http404
 from django.views.decorators.http import require_POST
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView,LogoutView
+from django.core.cache import  cache
 
 from .models import Post,Category,Tag,SiteSetting,Vote
 from .forms import CommentForm,UserRegistrationForm
@@ -31,10 +32,18 @@ def sidebar_context():
         .order_by("name")
     )
     return {
-        "latest_posts":Post.published.all()[:5],
-        "sidebar_categories":categories,
-        "archives":archives,
+        "latest_posts":list(Post.published.all()[:5]),
+        "sidebar_categories":list(categories),
+        "archives":list(archives),
     }
+# 把 sidebar_context() 的返回改成列表，避免缓存惰性 QuerySet：
+
+def cached_sidebar_context():
+    return cache.get_or_set(
+        "blog:sidebar:v1",
+        sidebar_context,
+        timeout=60,
+    )
 
 def paginate_posts(request,posts):
     page_size=max(1,SiteSetting.load().page_size)
@@ -59,7 +68,7 @@ def post_list(request):
     page_obj=paginate_posts(request,posts)
 
     return render(request,"blog/post_list.html",{
-        **sidebar_context(),
+        **cached_sidebar_context(),
         "posts":page_obj,
         "page_obj":page_obj,
         "query":query,
@@ -78,7 +87,7 @@ def post_detail(request,pk):
     return render(request,"blog/post_detail.html",{
         "post":post,
         "form":form,
-        **sidebar_context(),
+        **cached_sidebar_context(),
     })
 
 def add_comment(request,pk):
@@ -99,7 +108,7 @@ def add_comment(request,pk):
     return render(request,"blog/post_detail.html",{
         "post":post,
         "form":form,
-        **sidebar_context(),
+        **cached_sidebar_context(),
     })
 # 这里用了 POST → 保存 → 重定向，避免用户刷新页面时重复提交评论。
 
@@ -151,7 +160,7 @@ def category_posts(request,slug):
     )
     page_obj=paginate_posts(request,posts)
     return render(request,"blog/post_list.html",{
-        **sidebar_context(),
+        **cached_sidebar_context(),
         "posts":page_obj,
         "page_obj":page_obj,
         "page_title":f"分类：{category.name}",
@@ -166,7 +175,7 @@ def tag_posts(request,slug):
     )
     page_obj=paginate_posts(request,posts)
     return render(request,"blog/post_list.html",{
-        **sidebar_context(),
+        **cached_sidebar_context(),
         "posts":page_obj,
         "page_obj":page_obj,
         "page_title":f"标签：{tag.name}",
@@ -183,7 +192,7 @@ def archive_posts(request,year,month):
     )
     page_obj=paginate_posts(request,posts)
     return render(request,"blog/post_list.html",{
-        **sidebar_context(),
+        **cached_sidebar_context(),
         "posts":page_obj,
         "page_obj":page_obj,
         "page_title":f"{year} 年 {month} 月归档",

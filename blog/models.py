@@ -196,3 +196,27 @@ class SiteSetting(models.Model):
     @classmethod
     def load(cls):
         return cls.objects.get_or_create(pk=1)[0]
+
+
+class Attachment(models.Model):
+    post=models.ForeignKey(
+        Post,
+        verbose_name="文章",
+        on_delete=models.CASCADE,
+        related_name="attachments",
+    )
+    image=models.ImageField(
+        "图片",
+        upload_to="blog/attachments/%Y/%m/",
+    )
+    title=models.CharField("标题",max_length=80,blank=True)
+    created_at=models.DateTimeField("创建时间",auto_now_add=True)
+
+    class Meta:
+        verbose_name="图片附件",
+        verbose_name_plural=verbose_name,
+        ordering=["-created_at"]
+
+    def __str__(self):
+        return self.title or self.image.name
+    

@@ -375,3 +375,30 @@ a:hover {
         max-width: none;
     }
 }
+
+.attachments {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.attachments figure {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+}
+
+.attachments img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.attachments figcaption {
+    padding: 8px 12px;
+    color: var(--muted);
+    font-size: 13px;
+}
