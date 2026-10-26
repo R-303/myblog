@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import include,path
 from django.conf import settings
 from django.conf.urls.static import static
+from health import health
 
 urlpatterns = [
+    path("healthz/",health,name="health"),
     path('admin/', admin.site.urls),
     path("",include("blog.urls")),
 ]

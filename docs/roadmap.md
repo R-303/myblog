@@ -657,12 +657,21 @@ CSRF 跨站请求伪造，加个tokne，防止自动窃取信息
 **你要理解**
 
 - WSGI 是什么，Gunicorn 负责什么；
-- Nginx 负责什么：TLS、静态文件、反向代理；
-- `collectstatic` 在做什么；
-- 环境变量、`DEBUG=False`、`ALLOWED_HOSTS`、HTTPS；
-- 健康检查 `/healthz/`；
+   WSGI（Web Server Gateway Interface） Python 定义的一套接口规范，规定了两件事： Web 服务器怎么把请求交给 Python 应用； Python 应用怎么把响应交回给 Web 服务器。应用和服务器不需要互相认识，只需要都遵守 WSGI 标准。
+   Gunicorn：把 WSGI 应用“跑起来”的应用服务器 生产环境需要一个真正的应用服务器来加载 WSGI 应用、管理进程、处理并发。Gunicorn 就是最常用的那个。
+   Gunicorn 负责： 加载 WSGI 应用（gunicorn config.wsgi:application）； 管理多个 worker 进程（--workers 4），一个 worker 挂了自动重启； 接收 HTTP 请求，转成 WSGI 调用，把响应再转回 HTTP； 处理超时、日志、信号（优雅重启等）。 它不负责：TLS、静态文件、负载均衡——这些交给 Nginx。
+- Nginx 负责什么：TLS（加密安全协议）、静态文件（直接传给django，而动态请求再传给session，提高效率）、反向代理；
+- `collectstatic` 在做什么；`collectstatic` 做一件事：把所有这些分散的静态文件，统一复制到 STATIC_ROOT 这一个目录，然后 Nginx 只需要指向这一个目录。集中收集
+- 环境变量、`DEBUG=False`、`ALLOWED_HOSTS`、HTTPS； 
+    环境变量：把密码隐藏起来，不让密码写在代码里
+    DEBUG=False 如果为True，被攻击时，会泄露源码，SQL，家底都给你抄干净
+    ALLOWED_HOSTS 保证请求hosts在规范之内，避免伪造hosts攻击
+    HTTPS：请求协议加密，保证安全 HTTP+TLS
+- 健康检查 `/healthz/`； 健康检查是一个专门给运维系统看的轻量接口，返回“我还活着”或“我出问题了”。
 - Docker 镜像与容器；
-- CI 是什么，为什么每次提交都跑测试。
+    镜像（Image）：只读的“安装包模板” 镜像是一个分层、只读的文件系统快照，里面打包了：操作系统基础层、Python 运行时、依赖、你的代码、启动命令。镜像不可变：构建好之后，内容固定，谁跑都一样。
+    容器（Container）：镜像的“运行实例” 容器是镜像跑起来的一个进程，有自己的可写层、网络、文件系统隔离。一个镜像可以跑出多个容器
+- CI 是什么，为什么每次提交都跑测试。 CI：持续集成（Continuous Integration） CI 是每次提交代码，自动跑一遍“构建 + 测试 + 检查”的流水线。常见平台：GitHub Actions、GitLab CI、Jenkins。
 
 **你要做**
 

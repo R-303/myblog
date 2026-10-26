@@ -10,9 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-from pathlib import Path
+# from pathlib import Path
+# from django.conf.global_settings import LOGIN_URL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, MEDIA_URL, MEDIA_ROOT
 
-from django.conf.global_settings import LOGIN_URL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, MEDIA_URL, MEDIA_ROOT
+import os
+from pathlib import  Path
+
+from django.conf.global_settings import SECRET_KEY, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, STATIC_ROOT, \
+    SECURE_SSL_REDIRECT, SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE, SECURE_HSTS_SECONDS, SECURE_HSTS_INCLUDE_SUBDOMAINS, \
+    SECURE_HSTS_PRELOAD, SECURE_PROXY_SSL_HEADER
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +28,45 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t32%*-6=f2x3&k#y*stm8nu6@jk4vv9a$f$swps2a*yb)y@&6c'
-
+# SECRET_KEY = 'django-insecure-t32%*-6=f2x3&k#y*stm8nu6@jk4vv9a$f$swps2a*yb)y@&6c'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+# ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = []
+SECRET_KEY=os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-local-development-key",
+)
+
+DEBUG=os.environ.get(
+    "DJANGO_DEBUG",
+    "true",
+).lower() in {"1","true","yes"}
+
+ALLOWED_HOSTS=[
+    host
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1",
+    ).split(",")
+    if host
+]
+
+CSRF_TRUSTED_ORIGINS=[
+    origin
+    for origin in os.environ.get(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "",
+    ).split(",")
+    if origin
+]
+
+"""
+这样：
+- 本地不设置环境变量，也能用开发默认值；
+- 生产通过环境变量注入真实密钥、域名和调试开关；
+- 不会把生产密钥写进 Git。
+"""
 
 
 # Application definition
@@ -122,6 +161,7 @@ STATIC_URL = 'static/'
 PYGMENTS_STYLE="default"   #增加pygments样式
 STATICFILES_DIRS=[BASE_DIR / 'static']
 # STATIC_URL 是浏览器访问静态文件时用的 URL 前缀；STATICFILES_DIRS 告诉 Django 去哪里找这些文件。
+STATIC_ROOT=BASE_DIR / "staticfiles"
 
 MEDIA_URL="media/"
 MEDIA_ROOT=BASE_DIR/"media"
@@ -134,7 +174,24 @@ LOGOUT_REDIRECT_URL="blog:list"
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    "default": {
+        "BACKEND": (
+            "django.core.mail.backends.smtp.EmailBackend"
+            if not DEBUG
+            else "django.core.mail.backends.console.EmailBackend"
+        ),
     },
 }
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT=os.environ.get(
+        "DJANGO_SECURE_SSL_REDIRECT",
+        "true",
+    ).lower()=="true"
+    SESSION_COOKIE_SECURE=True
+    CSRF_COOKIE_SECURE=True
+    SECURE_HSTS_SECONDS=31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+    SECURE_HSTS_PRELOAD=True
+    SECURE_PROXY_SSL_HEADER=("HTTP_X_FORWARDED_PROTO","https")
+# STATIC_ROOT 是 collectstatic 收集静态文件的目标目录，staticfiles/ 已经在 .gitignore 里
