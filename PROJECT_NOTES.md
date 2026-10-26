@@ -6,9 +6,9 @@
 
 ## 当前阶段
 
-阶段 8 已完成：本地图片上传、详情页展示和侧边栏缓存都已实现。
-最近代码提交：`fc0ed3b feat: add image attachments and sidebar cache`。
-当前测试：27 个全部通过。
+阶段 9 进行中：本地可部署配置、健康检查和 CI 已完成，等待真正部署到 Linux 服务器。
+最近代码提交：`4ae4aa3 chore: prepare production deployment and ci`。
+当前测试：28 个。
 
 ## 技术栈
 
@@ -51,16 +51,19 @@ uv run manage.py test
 - `Attachment` 模型、本地媒体文件上传和详情页图片展示
 - `MEDIA_URL` / `MEDIA_ROOT` 和开发环境媒体文件路由
 - 侧边栏 LocMemCache 缓存
-- 27 个模型与视图测试
+- 环境变量驱动的生产配置
+- `/healthz/` 健康检查
+- Dockerfile、`.dockerignore` 和 GitHub Actions CI
+- 28 个模型与视图测试
 
 ## 下一步
 
-1. 进入阶段 9：部署与 CI；
-2. 生产配置改为环境变量驱动；
-3. 增加 `/healthz/` 和 `collectstatic`；
-4. 编写 Dockerfile；
-5. 配置 GitHub Actions 跑检查和测试；
-6. 部署到 Linux 服务器或云主机。
+1. 准备 Linux 服务器或云主机；
+2. 用 Docker 或 Gunicorn 启动应用；
+3. 用 Nginx 提供 HTTPS、静态文件和媒体文件；
+4. 配置生产环境变量；
+5. 验证公网地址和 `/healthz/`；
+6. 把阶段 9 标为完成。
 
 ## 约定
 

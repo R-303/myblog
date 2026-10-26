@@ -4,12 +4,12 @@
 
 ## 当前状态
 
-阶段 8 已完成：本地图片上传、详情页展示和侧边栏缓存都已实现，当前有 27 个测试通过。
+阶段 9 进行中：本地可部署配置、健康检查和 CI 已完成，等待真正部署到 Linux 服务器；当前有 28 个测试。
 
 最近一次代码提交：
 
 ```text
-fc0ed3b feat: add image attachments and sidebar cache
+4ae4aa3 chore: prepare production deployment and ci
 ```
 
 ## 开发阶段进度
@@ -25,7 +25,7 @@ fc0ed3b feat: add image attachments and sidebar cache
 | 6 | 用户认证：注册、登录、登出 | ✅ 已完成 | 注册后自动登录，登录后显示用户名，登出使用 POST + CSRF |
 | 7 | 搜索与后台统计 | ✅ 已完成 | 搜索只命中已发布文章，统计数字正确 |
 | 8 | 图片上传、缓存 | ✅ 已完成 | 图片可上传展示，缓存减少查询 |
-| 9 | 部署、健康检查、CI | ⬜ 未开始 | 公网可访问，`/healthz/` 正常，CI 通过 |
+| 9 | 部署、健康检查、CI | 🟡 进行中（本地配置完成，待服务器部署） | `/healthz/` 正常，Dockerfile 和 CI 已就绪，公网地址待完成 |
 | 10 | 个人化、RSS/sitemap、作品化 | ⬜ 未开始 | 有个人主页、截图、README 和演示地址 |
 
 ### 可选扩展
@@ -78,7 +78,7 @@ http://127.0.0.1:8000/admin/
 uv run manage.py test
 ```
 
-当前共 27 个测试，覆盖模型、列表/详情、浏览量、分类、标签、归档、分页、侧边栏、Markdown、评论、投票、用户认证、搜索、后台统计、图片附件和缓存。
+当前共 28 个测试，覆盖模型、列表/详情、浏览量、分类、标签、归档、分页、侧边栏、Markdown、评论、投票、用户认证、搜索、后台统计、图片附件、缓存和健康检查。
 
 ## 项目结构
 
@@ -95,13 +95,13 @@ uv run manage.py test
 
 ## 下一步
 
-阶段 9：部署与 CI。
+阶段 9 剩余部分：真正部署。
 
-- 生产配置由环境变量驱动；
-- 增加健康检查和静态文件收集；
-- 写 Dockerfile；
-- 配置 GitHub Actions；
-- 部署到 Linux 服务器或云主机。
+- 准备 Linux 服务器或云主机；
+- 用 Docker 或 Gunicorn 启动应用；
+- 用 Nginx 提供 HTTPS、静态文件和媒体文件；
+- 配置生产环境变量；
+- 验证公网地址和 `/healthz/`。
 
 ## 说明
 
