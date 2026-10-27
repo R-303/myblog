@@ -6,8 +6,8 @@
 
 ## 当前阶段
 
-阶段 9 进行中：本地可部署配置、健康检查和 CI 已完成，等待真正部署到 Linux 服务器。
-最近代码提交：`4ae4aa3 chore: prepare production deployment and ci`。
+阶段 9 进行中：部署文件已推送到 GitHub，CI 的 test 和 docker 均通过，等待真正部署到 Linux 服务器。
+最近代码提交：`b77f80b fix: track production env template`。
 当前测试：28 个。
 
 ## 技术栈
@@ -54,6 +54,8 @@ uv run manage.py test
 - 环境变量驱动的生产配置
 - `/healthz/` 健康检查
 - Dockerfile、`.dockerignore` 和 GitHub Actions CI
+- `docker-compose.yml`、Nginx 配置和部署手册
+- GitHub Actions 的 test 与 docker 任务均通过
 - 28 个模型与视图测试
 
 ## 下一步
