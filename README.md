@@ -6,12 +6,12 @@
 
 ## 当前状态
 
-阶段 9 进行中：部署文件已提交并推送到 GitHub，CI 的 test 和 docker 均通过；当前有 28 个测试，等待真正部署到 Linux 服务器。
+阶段 9 已完成：博客已部署到腾讯云轻量服务器，公网地址为 <http://49.232.18.58/>，CI 的 test 和 docker 均通过，当前有 28 个测试。
 
 最近一次代码提交：
 
 ```text
-b77f80b fix: track production env template
+b10b660 fix: correct nginx proxy config
 ```
 
 ## 开发阶段进度
@@ -27,7 +27,7 @@ b77f80b fix: track production env template
 | 6 | 用户认证：注册、登录、登出 | ✅ 已完成 | 注册后自动登录，登录后显示用户名，登出使用 POST + CSRF |
 | 7 | 搜索与后台统计 | ✅ 已完成 | 搜索只命中已发布文章，统计数字正确 |
 | 8 | 图片上传、缓存 | ✅ 已完成 | 图片可上传展示，缓存减少查询 |
-| 9 | 部署、健康检查、CI | 🟡 进行中（部署文件与 CI 完成，待服务器部署） | Compose、Nginx、Dockerfile、CI 已就绪，公网地址待完成 |
+| 9 | 部署、健康检查、CI | ✅ 已完成 | 公网地址可访问，图片和后台正常，`/healthz/` 正常，CI 通过 |
 | 10 | 个人化、RSS/sitemap、作品化 | ⬜ 未开始 | 有个人主页、截图、README 和演示地址 |
 
 ### 可选扩展
@@ -97,13 +97,13 @@ uv run manage.py test
 
 ## 下一步
 
-阶段 9 剩余部分：真正部署。
+阶段 10：个人化与作品化。
 
-- 准备 Linux 服务器或云主机；
-- 用 Docker 或 Gunicorn 启动应用；
-- 用 Nginx 提供 HTTPS、静态文件和媒体文件；
-- 配置生产环境变量；
-- 验证公网地址和 `/healthz/`。
+- 修改站点名称、标语、头像和主色；
+- 增加“关于我”页面；
+- 增加 RSS 和 sitemap；
+- 截图、录制演示视频；
+- 完善 README 和面试素材。
 
 ## 说明
 

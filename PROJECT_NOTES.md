@@ -6,9 +6,10 @@
 
 ## 当前阶段
 
-阶段 9 进行中：部署文件已推送到 GitHub，CI 的 test 和 docker 均通过，等待真正部署到 Linux 服务器。
-最近代码提交：`b77f80b fix: track production env template`。
+阶段 9 已完成：博客已部署到腾讯云轻量服务器，公网地址为 <http://49.232.18.58/>。
+最近代码提交：`b10b660 fix: correct nginx proxy config`。
 当前测试：28 个。
+已完成首次数据备份：`myblog-2026-10-28.tar.gz`。
 
 ## 技术栈
 
@@ -56,16 +57,19 @@ uv run manage.py test
 - Dockerfile、`.dockerignore` 和 GitHub Actions CI
 - `docker-compose.yml`、Nginx 配置和部署手册
 - GitHub Actions 的 test 与 docker 任务均通过
+- 腾讯云 Ubuntu 24.04 + Docker + Gunicorn + Nginx 公网部署
+- 本地数据库和 media 文件迁移
+- 公网访问、普通用户登录和备份验收
 - 28 个模型与视图测试
 
 ## 下一步
 
-1. 准备 Linux 服务器或云主机；
-2. 用 Docker 或 Gunicorn 启动应用；
-3. 用 Nginx 提供 HTTPS、静态文件和媒体文件；
-4. 配置生产环境变量；
-5. 验证公网地址和 `/healthz/`；
-6. 把阶段 9 标为完成。
+1. 进入阶段 10：个人化与作品化；
+2. 修改站点名称、标语、头像和主色；
+3. 增加“关于我”页面；
+4. 增加 RSS 和 sitemap；
+5. 截图并完善 README；
+6. 准备演示视频和面试 STAR 故事。
 
 ## 约定
 
