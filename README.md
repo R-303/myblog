@@ -1,5 +1,7 @@
 # My Blog
 
+[![CI](https://github.com/R-303/myblog/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/R-303/myblog/actions/workflows/ci.yml)
+
 一个使用 Django 6.1 构建的个人博客，正在按阶段学习和实现。
 
 ## 当前状态
