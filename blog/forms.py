@@ -6,14 +6,14 @@ from django.contrib.auth.forms import UserCreationForm
 class CommentForm(forms.ModelForm):
     class Meta:
         model=Comment
-        fields=["nickname","email","body"]
+        fields=["nickname","body"]
         widgets={
             "nickname":forms.TextInput(
                 attrs={"placeholder":"昵称"}
             ),
-            "email":forms.EmailInput(
-                attrs={"placeholder":"邮箱"}
-            ),
+            # "email":forms.EmailInput(
+                # attrs={"placeholder":"邮箱"}
+            # ),
             "body":forms.Textarea(
                 attrs={
                     "placeholder":"写下你的看法",

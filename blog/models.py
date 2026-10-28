@@ -124,7 +124,7 @@ class Comment(models.Model):
         related_name="comments",
     )
     nickname=models.CharField("昵称",max_length=30)
-    email=models.EmailField("邮箱")
+    email=models.EmailField("邮箱",blank=True)
     body=models.TextField("内容",max_length=2000)
     created_at=models.DateTimeField("创建时间",auto_now_add=True)
 

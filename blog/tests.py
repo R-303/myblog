@@ -200,7 +200,7 @@ class PostViewTests(TestCase):
             reverse("blog:detail",args=[self.post.pk])
         )
         self.assertContains(response,'name="nickname"')
-        self.assertContains(response,'name="email"')
+        self.assertNotContains(response,'name="email"')
         self.assertContains(response,'name="body"')
 
     def test_comment_can_be_created_and_is_escaped(self):
