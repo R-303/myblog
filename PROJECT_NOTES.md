@@ -7,9 +7,12 @@
 ## 当前阶段
 
 阶段 9 已完成：博客已部署到腾讯云轻量服务器，公网地址为 <http://49.232.18.58/>。
-最近代码提交：`b10b660 fix: correct nginx proxy config`。
+最近代码提交：`89f26c8 feat: make comment email optional`。
 当前测试：28 个。
 已完成首次数据备份：`myblog-2026-10-28.tar.gz`。
+
+当前工作项：私密站点模式。
+状态：本地代码草稿，已有中间件、配置和模板改动，但存在两个待修复 bug，尚未提交和部署。
 
 ## 技术栈
 
@@ -64,12 +67,21 @@ uv run manage.py test
 
 ## 下一步
 
-1. 进入阶段 10：个人化与作品化；
-2. 修改站点名称、标语、头像和主色；
-3. 增加“关于我”页面；
-4. 增加 RSS 和 sitemap；
-5. 截图并完善 README；
-6. 准备演示视频和面试 STAR 故事。
+1. 修复 `PrivateSiteMiddleware` 中的 `startwith` 拼写；
+2. 把 `ALLOW_REGISTRATION` 判断移到 `register()` 开头；
+3. 补私密访问、登录跳转、健康检查和关闭注册测试；
+4. 提交、推送并在服务器设置：
+
+```env
+PRIVATE_SITE=true
+ALLOW_REGISTRATION=false
+```
+
+5. 重新构建并验证服务器；
+6. 进入阶段 10：个人化与作品化；
+7. 修改站点名称、标语、头像和主色；
+8. 增加“关于我”页面、RSS 和 sitemap；
+9. 截图、完善 README、准备演示视频和面试 STAR 故事。
 
 ## 约定
 
