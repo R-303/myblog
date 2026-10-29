@@ -1,7 +1,6 @@
 import tempfile
 
 from django.contrib import auth
-from django.test import TestCase
 from  django.urls import reverse
 from unicodedata import category
 
@@ -9,6 +8,8 @@ from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+
+from config.settings import ALLOW_REGISTRATION, PRIVATE_SITE
 
 # Create your tests here.
 """
@@ -21,7 +22,7 @@ from django.contrib.auth import get_user_model
 #get_user_model()：拿到当前项目使用的用户模型，不直接写死 User，以后换用户模型也不用改测试
 from django.db.models.deletion import ProtectedError
 #ProtectedError：当 on_delete=PROTECT 阻止删除时，Django 抛出的异常。
-from django.test import TestCase
+from django.test import TestCase,override_settings
 # TestCase：Django 的测试基类，会创建临时测试数据库，跑完自动销毁
 from .models import Category,Post,Tag,SiteSetting,Comment,Vote,Attachment
 #要测的三个模型
@@ -273,6 +274,10 @@ def test_vote_requires_post(self):
 """
 
 class AuthTests(TestCase):
+    @override_settings(
+        ALLOW_REGISTRATION=True,
+        PRIVATE_SITE=False,
+    )
     def test_register_creates_user_and_logs_in(self):
         response=self.client.post(
             reverse("blog:register"),
@@ -491,4 +496,46 @@ class HealthTests(TestCase):
         response=self.client.get("/healthz/")
         self.assertEqual(response.status_code,200)
         self.assertEqual(response.json(),{"status":"ok"})
+
+
+
+# 私人封闭网站测试
+from django.test import override_settings
+
+@override_settings(PRIVATE_SITE=True,ALLOW_REGISTRATION=False)
+class PrivateSiteTests(TestCase):
+    def test_anonymous_home_redirects_to_login(self):
+        response=self.client.get(reverse("blog:list"))
+        self.assertEqual(response.status_code,302)
+        self.assertIn(reverse("blog:login"),response.url)
+
+    def test_healthz_is_public(self):
+        response=self.client.get("/healthz/")
+        self.assertEqual(response.status_code,200)
+
+    @override_settings(PRIVATE_SITE=False)
+    def test_registration_is_disabled(self):
+        response=self.client.get(reverse("blog:register"))
+        self.assertEqual(response.status_code,404)
+
+    @override_settings(PRIVATE_SITE=False,ALLOW_REGISTRATION=False)
+    def test_registration_post_is_disabled(self):
+        response=self.client.post(
+            reverse("blog:register"),
+            {
+                "username":"should-not-exist",
+                "email":"test@example.com",
+                "password1":"strong-password-123",
+                "password2":"strong-password-123",
+            },
+        )
+
+        self.assertEqual(response.status_code,404)
+        self.assertFalse(
+            get_user_model().objects.filter(
+                username="should-not-exist"
+            ).exists()
+        )
+
+# 加这两个最重要的测试，确认私密访问和注册关闭都生效。
 

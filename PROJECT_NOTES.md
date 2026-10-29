@@ -12,7 +12,7 @@
 已完成首次数据备份：`myblog-2026-10-28.tar.gz`。
 
 当前工作项：私密站点模式。
-状态：本地代码草稿，已有中间件、配置和模板改动，但存在两个待修复 bug，尚未提交和部署。
+状态：已部署并通过服务器访问验证；3 个私密测试已补好但尚未提交，注册接口的 POST 边界仍需加固。
 
 ## 技术栈
 
@@ -67,17 +67,17 @@ uv run manage.py test
 
 ## 下一步
 
-1. 修复 `PrivateSiteMiddleware` 中的 `startwith` 拼写；
-2. 把 `ALLOW_REGISTRATION` 判断移到 `register()` 开头；
-3. 补私密访问、登录跳转、健康检查和关闭注册测试；
-4. 提交、推送并在服务器设置：
+1. 把 `ALLOW_REGISTRATION` 判断移到 `register()` 开头；
+2. 增加直接 POST 注册被拒绝的测试；
+3. 运行并提交 3 个私密测试；
+4. 推送并在服务器重新构建：
 
 ```env
 PRIVATE_SITE=true
 ALLOW_REGISTRATION=false
 ```
 
-5. 重新构建并验证服务器；
+5. 再次验证登录跳转、关闭注册和 `/healthz/`；
 6. 进入阶段 10：个人化与作品化；
 7. 修改站点名称、标语、头像和主色；
 8. 增加“关于我”页面、RSS 和 sitemap；

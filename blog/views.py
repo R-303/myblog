@@ -209,6 +209,9 @@ def archive_posts(request,year,month):
 from django.conf import settings
 from django.http import Http404
 def register(request):
+    if not settings.ALLOW_REGISTRATION:
+        raise Http404
+
     if request.user.is_authenticated:
         return redirect("blog:list")
 
@@ -223,8 +226,7 @@ def register(request):
         )
         messages.success(request,"注册成功，欢迎您的加入。")
         return redirect("blog:list")
-    if not settings.ALLOW_REGISTRATION:
-        raise Http404
+
     return render(request,"registration/register.html",{
         "form":form,
     })
