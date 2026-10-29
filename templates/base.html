@@ -6,6 +6,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{% block title %}我的博客{% endblock %}</title>
+
+    <script>
+        (function () {
+            try {
+                const saved=localStorage.getItem("myblog-theme");
+                if(
+                    saved=="dark" ||
+                    (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)
+                ) {
+                    document.documentElement.dataset.theme="dark";
+                }
+            } catch (error) {
+                // localStorage 不可用时保持白天模式
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
     <link rel="stylesheet" href="{% static 'css/highlight.css' %}">
 </head>
@@ -25,6 +41,15 @@
             </form>
 
             <nav class="auth-links">
+                <button
+                    id="theme-toggle"
+                    class="theme-toggle"
+                    type="button"
+                    aria-label="切换黑夜模式"
+                    title="切换黑夜模式"
+                >
+                    🌙
+                </button>
                 {% if user.is_authenticated %}
                     <span>{{ user.username }}</span>
                     <form method="post" action="{% url 'blog:logout' %}">
@@ -55,5 +80,7 @@
         </div>
         {% include "includes/sidebar.html" %}
     </main>
+
+    <script src="{% static 'js/theme.js' %}" defer></script>
 </body>
 </html>

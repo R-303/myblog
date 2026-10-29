@@ -5,7 +5,33 @@
     --muted:#6b7280;
     --card:#ffffff;
     --border:#e5e7eb;
+    color-scheme: light;
 }
+
+:root[data-theme="dark"] {
+    --bg:#0f172a;
+    --text:#e5e7eb;
+    --accent:#5eead4;
+    --muted:#94a3b8;
+    --card:#111827;
+    --border:#334155;
+    color-scheme: dark;
+}
+
+:root[data-theme="dark"] .site-header {
+    background: rgba(15,23,42,0.95);
+}
+
+:root[data-theme="dark"] .message p {
+    background: #052e2b;
+    border-color:#115e59;
+}
+
+:root[data-theme="dark"] .post-body :not(pre) > code {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
 
 *{
     box-sizing: border-box;
@@ -401,4 +427,23 @@ a:hover {
     padding: 8px 12px;
     color: var(--muted);
     font-size: 13px;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items:center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.theme-toggle:hover {
+    background:var(--border);
 }
