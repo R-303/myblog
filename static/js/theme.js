@@ -1,6 +1,6 @@
 ( function () {
     const root=document.documentElement;
-    const button=document.getElementByID("theme-toggle");
+    const button=document.getElementById("theme-toggle");
 
     if(!button) {
         return;
@@ -13,11 +13,11 @@
     function updateButton(theme) {
         if(theme==="dark") {
             button.textContent="☀️";
-            button.setAttribute("arial-label","切换到白天模式");
+            button.setAttribute("aria-label","切换到白天模式");
             button.setAttribute("title","切换到白天模式");
         } else {
             button.textContent="🌙";
-            button.setAttribute("arial-label","切换到黑夜模式");
+            button.setAttribute("aria-label","切换到黑夜模式");
             button.setAttribute("title","切换到黑夜模式");
         }
     }
