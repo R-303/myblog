@@ -7,12 +7,12 @@
 ## 当前阶段
 
 阶段 9 已完成：博客已部署到腾讯云轻量服务器，公网地址为 <http://49.232.18.58/>。
-最近代码提交：`89f26c8 feat: make comment email optional`。
-当前测试：28 个。
+最近代码提交：`e29f5da fix: enable theme toggle`。
+当前测试：32 个。
 已完成首次数据备份：`myblog-2026-10-28.tar.gz`。
 
 当前工作项：私密站点模式。
-状态：已部署并通过服务器访问验证；3 个私密测试已补好但尚未提交，注册接口的 POST 边界仍需加固。
+状态：已完成并部署；注册关闭判断已移到 `register()` 开头，GET/POST 都会被拒绝，32 个测试通过。
 
 ## 技术栈
 
@@ -63,25 +63,15 @@ uv run manage.py test
 - 腾讯云 Ubuntu 24.04 + Docker + Gunicorn + Nginx 公网部署
 - 本地数据库和 media 文件迁移
 - 公网访问、普通用户登录和备份验收
-- 28 个模型与视图测试
+- 白天/黑夜主题切换、localStorage 记忆和系统主题偏好
+- 32 个模型与视图测试
 
 ## 下一步
 
-1. 把 `ALLOW_REGISTRATION` 判断移到 `register()` 开头；
-2. 增加直接 POST 注册被拒绝的测试；
-3. 运行并提交 3 个私密测试；
-4. 推送并在服务器重新构建：
-
-```env
-PRIVATE_SITE=true
-ALLOW_REGISTRATION=false
-```
-
-5. 再次验证登录跳转、关闭注册和 `/healthz/`；
-6. 进入阶段 10：个人化与作品化；
-7. 修改站点名称、标语、头像和主色；
-8. 增加“关于我”页面、RSS 和 sitemap；
-9. 截图、完善 README、准备演示视频和面试 STAR 故事。
+1. 进入阶段 10：个人化与作品化；
+2. 修改站点名称、标语、头像和主色；
+3. 增加“关于我”页面、RSS 和 sitemap；
+4. 截图、完善 README、准备演示视频和面试 STAR 故事。
 
 ## 约定
 
