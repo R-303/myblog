@@ -88,6 +88,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'blog.middleware.PrivateSiteMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -104,6 +105,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'blog.context_processors.site_flags',
             ],
         },
     },
@@ -198,3 +200,14 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD=True
     SECURE_PROXY_SSL_HEADER=("HTTP_X_FORWARDED_PROTO","https")
 # STATIC_ROOT 是 collectstatic 收集静态文件的目标目录，staticfiles/ 已经在 .gitignore 里
+
+
+PRIVATE_SITE=os.environ.get(
+    "PRIVATE_SITE",
+    "false",
+).lower()=="true"
+
+ALLOW_REGISTRATION=os.environ.get(
+    "ALLOW_REGISTRATION",
+    "false",
+).lower()=="true"

@@ -33,7 +33,9 @@
                     </form>
                 {% else %}
                     <a href="{% url 'blog:login' %}">登录</a>
-                    <a href="{% url 'blog:register' %}">注册</a>
+                    {% if allow_registration %}
+                        <a href="{% url 'blog:register' %}">注册</a>
+                    {% endif %}
                 {% endif %}
             </nav>
         </div>
