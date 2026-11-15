@@ -22,8 +22,8 @@
             }
         })();
     </script>
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    <link rel="stylesheet" href="{% static 'css/highlight.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}?v=20261029">
+    <link rel="stylesheet" href="{% static 'css/highlight.css' %}?v=20261029">
 </head>
 <body>
     <header class="site-header">
@@ -54,7 +54,7 @@
                     <span>{{ user.username }}</span>
                     <form method="post" action="{% url 'blog:logout' %}">
                         {% csrf_token %}
-                        <button thpe="submit">退出</button>
+                        <button type="submit">退出</button>
                     </form>
                 {% else %}
                     <a href="{% url 'blog:login' %}">登录</a>
@@ -81,6 +81,6 @@
         {% include "includes/sidebar.html" %}
     </main>
 
-    <script src="{% static 'js/theme.js' %}" defer></script>
+    <script src="{% static 'js/theme.js' %}?v=20261029" defer></script>
 </body>
 </html>
