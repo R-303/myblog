@@ -178,6 +178,25 @@ class SiteSetting(models.Model):
     """  全局站点设置，数据库只保留一行"""
 
     site_name=models.CharField("站点名称",max_length=80,default="我的博客")
+    #个人化
+    tagline=models.CharField(
+        "一句话介绍",
+        max_length=160,
+        blank=True,
+        default="",
+    )
+    manifesto=models.CharField(
+        "首页宣言",
+        max_length=240,
+        blank=True,
+        default="",
+    )
+    about=models.TextField(
+        "关于我",
+        blank=True,
+        default="",
+    )
+
     page_size=models.PositiveSmallIntegerField("每页文章数",default=5)
     updated_at=models.DateTimeField("更新时间",auto_now=True)
 
