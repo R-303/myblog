@@ -73,6 +73,7 @@ def post_list(request):
         "page_obj":page_obj,
         "query":query,
         "page_title":f"搜索： {query}" if query else "文章列表",
+        "show_home_intro":True,
     })
 
 def post_detail(request,pk):
@@ -242,3 +243,7 @@ class BlogLogoutView(LogoutView):
 
 # 显式写 backend 是为了明确告诉 Django 用哪个认证后端，避免以后加多个后端时产生歧义。
 
+def about(request):
+    return render(request,"blog/about.html",{
+        **cached_sidebar_context(),
+    })

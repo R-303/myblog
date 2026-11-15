@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}关于我 | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="about-page">
+    <div class="about-header">
+        <img
+            class="about-avatar"
+            src="{% static 'images/avatar.png' %}"
+            alt="{{ site.site_name }}"
+        >
+        <div>
+            <h1>关于我</h1>
+            <p class="meta">{{ site.tagline }}</p>
+        </div>
+    </div>
+
+    <div class="about-body">
+        {{ site.about|linebreaks }}
+    </div>
+</section>
+{% endblock %}

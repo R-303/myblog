@@ -465,7 +465,7 @@ a:hover {
     margin: 24px 0 32px;
     padding: 18px 22px;
     border-left: 4px solid var(--accent);
-    background: var(--accent);
+    background: var(--card);
     border-radius: 0 10px 10px 0;
 }
 
@@ -480,3 +480,35 @@ a:hover {
     font-weight: 600;
 }
 
+.about-page{
+    max-width: 760px;
+}
+
+.about-header{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.about-avatar{
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--card);
+    box-shadow: 0 0 0 1px var(--border);
+}
+
+.about-header h1 {
+    margin: 0 0 8px;
+}
+
+.about-body{
+    font-size: 17px;
+    line-height: 1.9;
+}
+
+.about-body p{
+    margin: 1em 0;
+}

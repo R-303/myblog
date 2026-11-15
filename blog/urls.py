@@ -28,6 +28,7 @@ urlpatterns=[
         views.BlogLogoutView.as_view(),
         name="logout"
     ),
+    path("about/",views.about,name="about"),
 ]
 
 """

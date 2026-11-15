@@ -58,6 +58,7 @@
                     🌙
                 </button>
                 {% if user.is_authenticated %}
+                    <a href="{% url 'blog:about' %}">关于</a>
                     <span>{{ user.username }}</span>
                     <form method="post" action="{% url 'blog:logout' %}">
                         {% csrf_token %}
