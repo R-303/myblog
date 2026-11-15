@@ -447,3 +447,36 @@ a:hover {
 .theme-toggle:hover {
     background:var(--border);
 }
+
+.brand {
+    display:flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.home-intro{
+    margin: 24px 0 32px;
+    padding: 18px 22px;
+    border-left: 4px solid var(--accent);
+    background: var(--accent);
+    border-radius: 0 10px 10px 0;
+}
+
+.home-tagline {
+    margin: 0 0 10px;
+    color: var(--muted);
+}
+
+.home-manifesto {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+

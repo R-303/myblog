@@ -5,7 +5,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>{% block title %}我的博客{% endblock %}</title>
+    <title>{% block title %}{{ site.site_name }}{% endblock %}</title>
 
     <script>
         (function () {
@@ -28,7 +28,14 @@
 <body>
     <header class="site-header">
         <div class="header-inner">
-            <a class="brand" href="{% url 'blog:list' %}">我的博客</a>
+            <a class="brand" href="{% url 'blog:list' %}">
+                <img
+                    class="brand-avatar"
+                    src="{% static 'images/avatar.png' %}"
+                    alt="{{ site.site_name }}"
+                >
+                <span>{{ site.site_name }}</span>
+            </a>
 
             <form method="get" action="{% url 'blog:list' %}" class="search-form">
                 <input

@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page_title }} | 我的博客{% endblock %}
+{% block title %}{{ page_title }} | {{ site.site_name }】{% endblock %}
 
 {% block content %}
   <h1>{{ page_title }}</h1>
+  {% if show_home_intro %}
+    <section class="home-intro">
+        <p class="home-tagline">{{ site.tagline }}</p>
+        <blockquote class="home-manifesto">
+            {{ site.manifesto }}
+        </blockquote>
+    </section>
+  {% endif %}
 
   {% for post in posts %}
     <article class="post-card">
